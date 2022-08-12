@@ -1,4 +1,5 @@
 from pathlib import Path
+import random
 
 import torch
 from torch.utils.data import Dataset
@@ -22,6 +23,10 @@ class ClassificationDataset(Dataset):
         class_0_files = sorted([f for f in class_0_path.glob('**/*')])
         class_1_files = sorted([f for f in class_1_path.glob('**/*')])
         class_2_files = sorted([f for f in class_2_path.glob('**/*')])
+
+        random.shuffle(class_0_files)
+        random.shuffle(class_1_files)
+        random.shuffle(class_2_files)
 
         index = len(class_1_files) - len(class_1_files) // 5
         if train:
