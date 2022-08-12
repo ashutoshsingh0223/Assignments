@@ -136,8 +136,5 @@ class Classifier(nn.Module):
         """
         data = torch.load(path)
         model = cls(**data['params'])
-
-        state_dict = torch.load(data['state_dict'])
-        model.load_state_dict(state_dict)
-
+        model.load_state_dict(data['state_dict'])
         return model
