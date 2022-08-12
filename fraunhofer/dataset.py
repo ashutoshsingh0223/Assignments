@@ -12,7 +12,7 @@ from fraunhofer.constants import BASE_DIR, BEACH, HARBOR, RIVER
 class ClassificationDataset(Dataset):
     CLASS_MAP_BY_INDEX = (BEACH, HARBOR, RIVER, )
 
-    def __init__(self, root: 'Path' = BASE_DIR / 'dataset', train: bool = True, download=False):
+    def __init__(self, root: 'Path' = BASE_DIR / 'dataset', train: bool = True, download=False, transform=None):
         self.root = root
 
         class_0_path = self.root / self.CLASS_MAP_BY_INDEX[0]
@@ -29,7 +29,11 @@ class ClassificationDataset(Dataset):
         else:
             self.files = class_0_files[index:] + class_1_files[index:] + class_2_files[index:]
 
-        self.transform = Resize((256, 256))
+        self.resize_transform = Resize((256, 256))
+
+        self.transform = None
+        if transform is not None:
+            self.transform = transform
 
     def __len__(self):
         return len(self.files)
@@ -42,4 +46,9 @@ class ClassificationDataset(Dataset):
         image = np.array(Image.open(file).convert("RGB")).astype(np.float32)
         image = image.transpose((2, 0, 1))
         image = torch.from_numpy(image)
-        return self.transform(image), torch.tensor(label)
+        image = self.resize_transform(image)
+
+        if self.transform:
+            image = self.transform(image)
+
+        return image, torch.tensor(label)
