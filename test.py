@@ -7,8 +7,10 @@ import numpy as np
 from PIL import Image
 
 from fraunhofer.model import Classifier
+from fraunhofer.dataset import ClassificationDataset
 
-def predict(model_path, img_path):
+
+def load_image(img_path):
     transform = Resize((256, 256))
     image = np.array(Image.open(img_path).convert("RGB")).astype(np.float32)
     image = image.transpose((2, 0, 1))
@@ -16,18 +18,51 @@ def predict(model_path, img_path):
     image = transform(image)
     # Convert to a batch of 1
     image = image.unsqueeze(0)
+    return image
 
+
+def load_model(model_path):
+    model = Classifier.load(model_path)
+    return model
+
+
+def predict(model, image):
     dev = device("cuda:0" if cuda.is_available() else "cpu")
 
-    model = Classifier.load(model_path)
+
     model = model.to(dev)
-    image = image.to(device)
+    image = image.to(dev)
 
     softmax = Softmax(dim=1)
 
     logits = model(image)
     preds = softmax(logits)
-
     top_1_class = torch.argmax(preds, dim=1)
-    print(top_1_class)
+    print(f'Predicted Class: {ClassificationDataset.CLASS_MAP_BY_INDEX[top_1_class[0].cpu().item()]}')
 
+
+if __name__ == '__main__':
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('model-path', required=True, type=str)
+    parser.add_argument('prediction-mode', required=False, type=str, default='single', choices=['single', 'multiple'])
+    parser.add_argument('img-path', required=False, type=str, default=None)
+    args = parser.parse_args()
+
+    model = load_model(args.model_path)
+
+    if args.prediction_mode == 'single':
+        if args.img_path is None:
+            raise ValueError('Prediction Model `single` requires image path')
+        print(args.img_path)
+        image = load_image(args.img_path)
+        predict(model, image)
+        print('\n')
+
+    elif args.prediction_model == 'multiple':
+        img_path = input('Enter Image Path')
+        print(img_path)
+        image = load_image(img_path)
+        predict(model, image)
+        print('\n')
