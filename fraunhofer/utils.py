@@ -3,6 +3,8 @@ from collections import OrderedDict
 
 import torch.nn as nn
 
+import matplotlib.pyplot as plt
+
 
 # Activation funcs
 def get_activation_and_params(name) -> Tuple[Any, Dict[str, Any]]:
@@ -32,6 +34,24 @@ def disp_metrics_for_epoch(res_dict):
             value += pad * " "
             print("{}: {} | ".format(key, value), end="")
     print('\n')
+
+
+def plot_result_metrics(res_dict, path, mode='val'):
+
+    assert mode in ['val', 'train'], 'Mode should be in (val, train)'
+    fig, axs = plt.subplots(1, 4, sharey=False, figsize=(15, 6))
+    fig.tight_layout()
+    axs = axs.ravel()
+    i = 0
+    for x in res_dict:
+        if mode in x:
+            axs[i].set_ylim([min(res_dict[x]), max(res_dict[x])])
+            axs[i].set_xlabel('epochs')
+            axs[i].set_xticks(list(range(0, 15, 2)))
+            axs[i].plot(res_dict[x])
+            axs[i].set_title(x)
+            i += 1
+    plt.savefig(path / f'{mode}_metrics.png', dpi=120)
 
 
 # Results dict for classification

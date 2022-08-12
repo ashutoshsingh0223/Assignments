@@ -11,7 +11,7 @@ from torchmetrics import AUROC, Accuracy, F1Score
 
 from fraunhofer.model import Classifier
 from fraunhofer.dataset import ClassificationDataset
-from fraunhofer.utils import get_res_dict, disp_metrics_for_epoch
+from fraunhofer.utils import get_res_dict, disp_metrics_for_epoch, plot_result_metrics
 from fraunhofer.constants import BASE_DIR
 
 
@@ -158,6 +158,9 @@ def main(train_batch_size=32, test_batch_size=8, learning_rate=0.0001, epochs=15
 
     # Save final model
     model.save(run_id=run_id)
+
+    # Save val metrics charts
+    plot_result_metrics(res_dict, path=run_path)
 
 
 if __name__ == '__main__':
