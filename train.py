@@ -147,6 +147,7 @@ def main(train_batch_size=32, test_batch_size=8, learning_rate=0.0001, epochs=15
         # save best model so far
         if res_dict['val_loss'][-1] <= best_val_loss:
             model.save(run_id=run_id, best=True)
+            best_val_loss = res_dict['val_loss'][-1]
 
         # display metrics for epoch
         disp_metrics_for_epoch(res_dict)
