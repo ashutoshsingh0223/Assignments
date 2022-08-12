@@ -99,7 +99,7 @@ class Classifier(nn.Module):
         x = self.encoder(x)
         x = self.bottleneck(x)
         x = self.flatten(x)
-        x = self.classifier(x)
+        x = self.fc_classifier(x)
         return x
 
     def save(self, run_id, best=False):
