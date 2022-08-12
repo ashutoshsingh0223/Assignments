@@ -51,4 +51,68 @@ We assume that you should solve this task in a time frame of 1 week. If you need
 It's fine if you don't have access to GPUs for training. The dataset is small enough and the task is comparatively simple so that a good network can be trained in as little as 10 minutes using a notebook CPU.
 
 
+# Solution
 
+## Dataset structure
+Please put your dataset inside the `fraunhofer` directory. The directory structure classes should look like `<path>/fraunhofer/dataset/<class>/*.png` , for example `<path>/fraunhofer/dataset/beach/*.png`
+
+## Project Structure - fraunhofer
+
+### Model File
+Contains all the information about the model and encoder and examples about how their configs are parametrized.
+
+### Dataset File
+Torch dataset class to load and get the dataset. 20% dataset isn used for validation.
+
+### Utils
+Some utils for metric calculation and plotting etc.
+
+## Train and Test Scripts
+
+### train.py
+Used to train a classifier with predefined config and number of classes, uses adam optimizer and cross entropy loss for optimization.
+This file is not parametrized and runs for batch size of 32 for 15 epochs. It is also responsible for saving and plotting metrics and other artifacts.
+
+```
+python train.py
+```
+
+
+### test.py
+Runs one-time or interactive predictions usinf `single` and `multiple` prediction modes. How to run?
+
+Prediction model `single` takes in a saved model path and an image path to spit out predicted class(top-1) for the image.
+```
+python test.py --model-path /1/2/3/best-classifier.pt --prediction-mode single --img-path /1/2/3/fraunhofer/dataset/beach/19.png
+```
+
+Output:
+
+```
+/1/2/3/fraunhofer/dataset/beach/19.png
+Predicted Class: beach
+```
+
+
+Prediction mode `multiple` does the same thing, but you can interactively provide image paths. Example:
+
+```
+python test.py --model-path /1/2/3/best-classifier.pt --prediction-mode multiple
+```
+
+Output:
+
+```
+Enter Image : /1/2/3/fraunhofer/dataset/beach/19.png
+/1/2/3/fraunhofer/dataset/beach/19.png
+Predicted Class: beach
+
+Enter Image Path: /1/2/3/fraunhofer/dataset/beach/22.png        
+/1/2/3/fraunhofer/dataset/beach/22.png 
+Predicted Class: beach
+
+Enter Image Path: /1/2/3/fraunhofer/dataset/beach/22.png        
+/1/2/3/fraunhofer/dataset/beach/22.png 
+Predicted Class: beach
+
+```
