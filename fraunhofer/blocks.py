@@ -15,7 +15,7 @@ class ConvBlock(nn.Module):
         self.block.append(nn.Conv2d(in_channels=in_channels, out_channels=out_channels,
                                     kernel_size=kernel_size, padding=padding, stride=stride))
         if batch_norm:
-            self.block.append(nn.BatchNorm1d(num_features=out_channels))
+            self.block.append(nn.BatchNorm2d(num_features=out_channels))
         if activation:
             activation, params = get_activation_and_params(activation)
             self.block.append(activation(**params))
@@ -27,7 +27,7 @@ class ConvBlock(nn.Module):
             else:
                 self.identity = nn.Sequential(
                     nn.Conv2d(in_channels, out_channels, kernel_size=1, stride=1, padding=0),
-                    nn.BatchNorm1d(out_channels),
+                    nn.BatchNorm2d(out_channels),
                 )
 
     def forward(self, x):

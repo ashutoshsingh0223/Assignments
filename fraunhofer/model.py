@@ -45,9 +45,9 @@ class Encoder(nn.Module):
 
             if layer_info.get('pool'):
                 if layer_info['type'] == 'max':
-                    self.encoder.append(nn.MaxPool1d(kernel_size=layer_info['pool_stride']))
+                    self.encoder.append(nn.MaxPool2d(kernel_size=layer_info['pool_stride']))
                 elif layer_info['type'] == 'avg':
-                    self.encoder.append(nn.AvgPool1d(kernel_size=layer_info['pool_stride']))
+                    self.encoder.append(nn.AvgPool2d(kernel_size=layer_info['pool_stride']))
                 else:
                     raise ValueError('Only supported pooling operations are max and avg')
 
