@@ -35,13 +35,16 @@ class Encoder(nn.Module):
         self.out_channels = None
 
         for layer_info in self.cfg:
-            out_channels = layer_info.get('out_channels') or int(in_channels * layer_info['out_channel_factor'])
+            if isinstance(layer_info.get('out_channels'), int):
+                out_channels = layer_info.get('out_channels')
+            else:
+                out_channels = int(in_channels * layer_info['out_channel_factor'])
 
             self.layers.append(ConvBlock(in_channels=in_channels, out_channels=out_channels,
-                                          kernel_size=layer_info['kernel'], padding=layer_info['padding'],
-                                          batch_norm=layer_info.get('batch_norm', False),
-                                          identity=layer_info.get('identity', False),
-                                          activation=layer_info.get('activation'), stride=layer_info.get('stride')))
+                                         kernel_size=layer_info['kernel'], padding=layer_info['padding'],
+                                         batch_norm=layer_info.get('batch_norm', False),
+                                         identity=layer_info.get('identity', False),
+                                         activation=layer_info.get('activation'), stride=layer_info.get('stride')))
 
             if layer_info.get('pool'):
                 if layer_info['type'] == 'max':

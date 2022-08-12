@@ -19,23 +19,26 @@ accuracy = Accuracy(top_k=1, num_classes=3, average='macro')
 auc_roc = AUROC(num_classes=3, average='macro')
 f1_score = F1Score(top_k=1, num_classes=3, average='macro')
 
-
 config = {
     'in_channels': 3,
     'encoder': ({'kernel': 3, 'out_channel_factor': None, 'out_channels': 64, 'batch_norm': True, 'pool': True,
                  'type': 'max', 'pool_stride': 2, 'padding': 1, 'identity': True, 'activation': 'relu', 'stride': 1},
+
                 {'kernel': 3, 'out_channel_factor': 2, 'out_channels': None, 'batch_norm': True, 'pool': True,
                  'type': 'max', 'pool_stride': 2, 'padding': 1, 'identity': True, 'activation': 'relu', 'stride': 1},
+
                 {'kernel': 3, 'out_channel_factor': 2, 'out_channels': None, 'batch_norm': True, 'pool': True,
                  'type': 'max', 'pool_stride': 2, 'padding': 1, 'identity': True, 'activation': 'relu', 'stride': 1},
-                {'kernel': 3, 'out_channel_factor': 2, 'out_channels': True, 'batch_norm': True, 'pool': True,
+
+                {'kernel': 3, 'out_channel_factor': 2, 'out_channels': None, 'batch_norm': True, 'pool': True,
                  'type': 'max', 'pool_stride': 2, 'padding': 1, 'identity': True, 'activation': 'relu', 'stride': 1},
-                {'kernel': 3, 'out_channel_factor': 2, 'out_channels': True, 'batch_norm': True, 'pool': True,
+
+                {'kernel': 3, 'out_channel_factor': 2, 'out_channels': None, 'batch_norm': True, 'pool': True,
                  'type': 'max', 'pool_stride': 2, 'padding': 1, 'identity': True, 'activation': 'relu', 'stride': 1},
                 ),
     'fc_classifier': (
-        {"in_features": 64, "out_features": 256, "activation": 'relu6', 'dropout': 0.4},
-        {"in_features": 256, "out_features": 3, "activation": 'relu6', 'dropout': None},
+        {"in_features": 64, "out_features": 256, "activation": None, 'dropout': 0.4},
+        {"in_features": 256, "out_features": 3, "activation": None, 'dropout': None},
     )
 }
 
