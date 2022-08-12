@@ -134,7 +134,7 @@ class Classifier(nn.Module):
         Returns:
 
         """
-        data = torch.load(path)
+        data = torch.load(path, map_location=torch.device('cpu'))
         model = cls(**data['params'])
         model.load_state_dict(data['state_dict'])
         return model

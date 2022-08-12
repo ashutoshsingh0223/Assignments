@@ -49,9 +49,9 @@ if __name__ == '__main__':
     import argparse
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('model-path', required=True, type=str)
-    parser.add_argument('prediction-mode', required=False, type=str, default='single', choices=['single', 'multiple'])
-    parser.add_argument('img-path', required=False, type=str, default=None)
+    parser.add_argument('--model-path', required=True, type=str)
+    parser.add_argument('--prediction-mode', required=False, type=str, default='single', choices=['single', 'multiple'])
+    parser.add_argument('--img-path', required=False, type=str, default=None)
     args = parser.parse_args()
 
     model = load_model(args.model_path)
@@ -64,9 +64,10 @@ if __name__ == '__main__':
         predict(model, image)
         print('\n')
 
-    elif args.prediction_model == 'multiple':
-        img_path = input('Enter Image Path')
-        print(img_path)
-        image = load_image(img_path)
-        predict(model, image)
-        print('\n')
+    elif args.prediction_mode == 'multiple':
+        while True:
+            img_path = input('Enter Image Path: ')
+            print(img_path)
+            image = load_image(img_path)
+            predict(model, image)
+            print('\n')
