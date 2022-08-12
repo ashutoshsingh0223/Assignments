@@ -37,7 +37,7 @@ class Encoder(nn.Module):
         for layer_info in self.cfg:
             out_channels = layer_info.get('out_channels') or int(in_channels * layer_info['out_channel_factor'])
 
-            self.encoder.append(ConvBlock(in_channels=in_channels, out_channels=out_channels,
+            self.layers.append(ConvBlock(in_channels=in_channels, out_channels=out_channels,
                                           kernel_size=layer_info['kernel'], padding=layer_info['padding'],
                                           batch_norm=layer_info.get('batch_norm', False),
                                           identity=layer_info.get('identity', False),
@@ -45,9 +45,9 @@ class Encoder(nn.Module):
 
             if layer_info.get('pool'):
                 if layer_info['type'] == 'max':
-                    self.encoder.append(nn.MaxPool2d(kernel_size=layer_info['pool_stride']))
+                    self.layers.append(nn.MaxPool2d(kernel_size=layer_info['pool_stride']))
                 elif layer_info['type'] == 'avg':
-                    self.encoder.append(nn.AvgPool2d(kernel_size=layer_info['pool_stride']))
+                    self.layers.append(nn.AvgPool2d(kernel_size=layer_info['pool_stride']))
                 else:
                     raise ValueError('Only supported pooling operations are max and avg')
 
