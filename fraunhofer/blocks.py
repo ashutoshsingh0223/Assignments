@@ -31,7 +31,10 @@ class ConvBlock(nn.Module):
                 )
 
     def forward(self, x):
-        out = self.block(x)
+        out = x
+        for layer in self.block:
+            out = layer(out)
+
         if self.identity is not None:
             out = out + self.identity(x)
 
