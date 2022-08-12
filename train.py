@@ -109,9 +109,9 @@ def main(train_batch_size=32, test_batch_size=8, learning_rate=0.0001, epochs=15
             roc = auc_roc(detached_preds, labels)
 
         # Finaly compute metrics for an epoch
-        res_dict['train_acc'].append(accuracy.compute())
-        res_dict['train_f1'].append(f1_score.compute())
-        res_dict['train_roc_auc'].append(auc_roc.compute())
+        res_dict['train_acc'].append(accuracy.compute().item())
+        res_dict['train_f1'].append(f1_score.compute().item())
+        res_dict['train_roc_auc'].append(auc_roc.compute().item())
         res_dict['train_loss'].append(run_loss_tr / len(train_loader))
 
         # Reset torchmetrics instances to reuse during validation
@@ -135,9 +135,9 @@ def main(train_batch_size=32, test_batch_size=8, learning_rate=0.0001, epochs=15
             roc = auc_roc(detached_preds, labels)
             run_loss_val += loss.item()
 
-        res_dict['val_acc'].append(accuracy.compute())
-        res_dict['val_f1'].append(f1_score.compute())
-        res_dict['val_roc_auc'].append(auc_roc.compute())
+        res_dict['val_acc'].append(accuracy.compute().item())
+        res_dict['val_f1'].append(f1_score.compute().item())
+        res_dict['val_roc_auc'].append(auc_roc.compute().item())
         res_dict['val_loss'].append(run_loss_val / len(val_loader))
 
         accuracy.reset()
@@ -145,7 +145,7 @@ def main(train_batch_size=32, test_batch_size=8, learning_rate=0.0001, epochs=15
         auc_roc.reset()
 
         # save best model so far
-        if res_dict['val_loss'] <= best_val_loss:
+        if res_dict['val_loss'][-1] <= best_val_loss:
             model.save(run_id=run_id, best=True)
 
         # display metrics for epoch
