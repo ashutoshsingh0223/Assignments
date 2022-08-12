@@ -58,6 +58,11 @@ class Encoder(nn.Module):
 
         self.out_channels = in_channels
 
+    def forward(self, x):
+        for layer in self.layers:
+            x = layer(x)
+        return x
+
 
 class Classifier(nn.Module):
     def __init__(self, config, num_classes=3):
