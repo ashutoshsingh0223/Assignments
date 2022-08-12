@@ -77,11 +77,21 @@ This file is not parametrized and runs for batch size of 32 for 15 epochs. It is
 python train.py
 ```
 
+#### Saved models after training
+Each training iteration is linked to a an indentifier called the `run_id`. 
+After training is complete a new directory is created like `<path>/fraunhofer/run_id` which contains the folowwing files:
+
+- `best-classifier.pt`: Saved model state dict for best model version
+- `classifier.pt`: Saved model state dict for final model
+- `hyperparams.json`: All the configs & hyperparams used for training.
+- `metrics.json`: Metrics per epoch; accuracy, loss, f1_score, and roc-auc
+- `val_metrics.png`: Plots for validation metrics
+
 
 ### test.py
-Runs one-time or interactive predictions usinf `single` and `multiple` prediction modes. How to run?
+Runs one-time or interactive predictions using `single` and `multiple` prediction modes. How to run?
 
-Prediction model `single` takes in a saved model path and an image path to spit out predicted class(top-1) for the image.
+Prediction mode `single` takes in a saved model path and an image path to spit out predicted class(top-1) for the image.
 ```
 python test.py --model-path /1/2/3/best-classifier.pt --prediction-mode single --img-path /1/2/3/fraunhofer/dataset/beach/19.png
 ```
