@@ -5,37 +5,8 @@ from pathlib import Path
 import torch
 import torch.nn as nn
 
-from .blocks import ConvBlock, FullyConnectedSet
-from .constants import BASE_DIR
-
-
-config = {
-    'in_channels': 3,
-    'encoder': ({'kernel': 3, 'out_channel_factor': None, 'out_channels': 64, 'batch_norm': True, 'pool': True,
-                 'type': 'max', 'pool_stride': 2, 'padding': 1, 'output_padding': 1, 'identity': False,
-                 'activation': 'relu',
-                 'stride': 1},
-                {'kernel': 3, 'out_channel_factor': 2, 'out_channels': None, 'batch_norm': True, 'pool': True,
-                 'type': 'max', 'pool_stride': 2, 'padding': 1, 'output_padding': 1, 'identity': False,
-                 'activation': 'relu',
-                 'stride': 1},
-                {'kernel': 3, 'out_channel_factor': 2, 'out_channels': None, 'batch_norm': True, 'pool': True,
-                 'type': 'max', 'pool_stride': 2, 'padding': 1, 'output_padding': 1, 'identity': False,
-                 'activation': 'relu',
-                 'stride': 1},
-                {'kernel': 3, 'out_channel_factor': 2, 'out_channels': None, 'batch_norm': True, 'pool': True,
-                 'type': 'max', 'pool_stride': 2, 'padding': 1, 'output_padding': 1, 'identity': False,
-                 'activation': 'relu',
-                 'stride': 1},
-                {'kernel': 3, 'out_channel_factor': 2, 'out_channels': None, 'batch_norm': True, 'pool': True,
-                 'type': 'max', 'pool_stride': 2, 'padding': 1, 'output_padding': 1, 'identity': False,
-                 'activation': 'relu',
-                 'stride': 1},),
-    'fc_classifier': (
-                {"in_features": 64, "out_features": 256, "activation": 'relu6', 'dropout': 0.4},
-                {"in_features": 256, "out_features": 3, "activation": 'relu6', 'dropout': None},
-            )
-}
+from fraunhofer.blocks import ConvBlock, FullyConnectedSet
+from fraunhofer.constants import BASE_DIR
 
 
 class Encoder(nn.Module):

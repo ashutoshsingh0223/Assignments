@@ -2,7 +2,7 @@ from typing import Optional
 
 import torch.nn as nn
 
-from .utils import get_activation_and_params
+from fraunhofer.utils import get_activation_and_params
 
 
 class ConvBlock(nn.Module):

@@ -5,7 +5,7 @@ from torch.utils.data import Dataset
 import numpy as np
 from PIL import Image
 
-from .constants import BASE_DIR, BEACH, HARBOR, RIVER
+from fraunhofer.constants import BASE_DIR, BEACH, HARBOR, RIVER
 
 
 class ClassificationDataset(Dataset):
