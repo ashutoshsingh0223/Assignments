@@ -134,7 +134,7 @@ class Classifier(nn.Module):
         Returns:
 
         """
-        data = json.loads(open(path, 'r').read())
+        data = torch.load(path)
         model = cls(**data['params'])
 
         state_dict = torch.load(data['state_dict'])
