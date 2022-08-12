@@ -4,6 +4,7 @@ import torch
 from torch.utils.data import Dataset
 import numpy as np
 from PIL import Image
+from torchvision.transforms import Resize
 
 from fraunhofer.constants import BASE_DIR, BEACH, HARBOR, RIVER
 
@@ -28,6 +29,8 @@ class ClassificationDataset(Dataset):
         else:
             self.files = class_0_files[index:] + class_1_files[index:] + class_2_files[index:]
 
+        self.transform = Resize((256, 256))
+
     def __len__(self):
         return len(self.files)
 
@@ -38,4 +41,5 @@ class ClassificationDataset(Dataset):
         label = self.CLASS_MAP_BY_INDEX.index(label_name)
         image = np.array(Image.open(file).convert("RGB")).astype(np.float32)
         image = image.transpose((2, 0, 1))
-        return torch.from_numpy(image), torch.tensor(label)
+        image = torch.from_numpy(image)
+        return self.transform(image), torch.tensor(label)
