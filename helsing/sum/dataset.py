@@ -4,6 +4,8 @@ from torch.utils.data import Dataset
 from torchvision.transforms import Compose, ToTensor, Normalize
 from torchvision.datasets import MNIST
 
+from PIL import Image
+
 import numpy as np
 
 
@@ -72,5 +74,8 @@ class PairSample(Dataset):
                 self.test_pairs[index][0]].item()
             img2, label2 = self.test_data[self.test_pairs[index][1]], self.test_labels[
                 self.test_pairs[index][1]].item()
+
+        img1 = Image.fromarray(img1.numpy(), mode='L')
+        img2 = Image.fromarray(img2.numpy(), mode='L')
 
         return self.to_tensor(img1).unsqueeze(0), self.to_tensor(img2).unsqueeze(0), torch.tensor(label1+label2)
