@@ -34,7 +34,7 @@ class PairSample(Dataset):
 
             self.train_pairs = []
             for i in range(0, len(self.train_data)):
-                sampled_label = np.random.choice(self.labels_set, 1)
+                sampled_label = np.random.choice(self.labels_set)
                 sampled_index = np.random.choice(self.label_to_indices[sampled_label])
                 self.train_pairs.append((i, sampled_index))
 
@@ -51,7 +51,7 @@ class PairSample(Dataset):
 
             self.test_pairs = []
             for i in range(0, len(self.test_data)):
-                sampled_label = random_state.choice(self.labels_set, 1)
+                sampled_label = random_state.choice(self.labels_set)
                 sampled_index = random_state.choice(self.label_to_indices[sampled_label])
                 self.test_pairs.append((i, sampled_index))
 
