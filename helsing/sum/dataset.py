@@ -78,4 +78,4 @@ class PairSample(Dataset):
         img1 = Image.fromarray(img1.numpy(), mode='L')
         img2 = Image.fromarray(img2.numpy(), mode='L')
 
-        return self.to_tensor(img1).unsqueeze(0), self.to_tensor(img2).unsqueeze(0), torch.tensor(label1+label2)
+        return self.to_tensor(img1), self.to_tensor(img2), torch.tensor(label1+label2)
