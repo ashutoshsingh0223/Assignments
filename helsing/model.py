@@ -10,7 +10,7 @@ from helsing.constants import BASE_DIR
 
 
 class Encoder(nn.Module):
-    def __init__(self, config, in_channels=3):
+    def __init__(self, config, in_channels=1):
         """
         Convolutional Encoder. Built for images.
         Args:

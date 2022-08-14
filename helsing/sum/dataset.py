@@ -71,4 +71,4 @@ class PairSample(Dataset):
             img2, label2 = self.test_data[self.test_pairs[index][1]], self.test_labels[
                 self.test_pairs[index][1]].item()
 
-        return img1, img2, torch.tensor(label1+label2)
+        return img1.unsqueeze(0), img2.unsqueeze(0), torch.tensor(label1+label2)
