@@ -84,13 +84,14 @@ def train_classifier(train_batch_size=64, test_batch_size=64, learning_rate=0.00
         run_loss_val = 0.0
 
         model.train()
-        for data, labels in train_loader:
-            data = data.to(device)
+        for data1, data2, labels in train_loader:
+            data1 = data1.to(device)
+            data2 = data2.to(device)
             labels = labels.to(device)
 
             optimizer.zero_grad()
             with torch.set_grad_enabled(True):
-                out = model(data)
+                out = model(data1, data2)
                 loss = criterion(out, labels)
 
                 loss.backward()
@@ -118,12 +119,13 @@ def train_classifier(train_batch_size=64, test_batch_size=64, learning_rate=0.00
         auc_roc.reset()
 
         model.eval()
-        for data, labels in val_loader:
-            data = data.to(device)
+        for data1, data2, labels in val_loader:
+            data1 = data1.to(device)
+            data2 = data2.to(device)
             labels = labels.to(device)
             optimizer.zero_grad()
             with torch.set_grad_enabled(False):
-                out = model(data)
+                out = model(data1, data2)
                 loss = criterion(out, labels)
 
             detached_preds = softmax(out.detach().clone()).cpu()
@@ -209,13 +211,14 @@ def train_bilinear_classifier(train_batch_size=64, test_batch_size=64, learning_
         run_loss_val = 0.0
 
         model.train()
-        for data, labels in train_loader:
-            data = data.to(device)
+        for data1, data2, labels in train_loader:
+            data1 = data1.to(device)
+            data2 = data2.to(device)
             labels = labels.to(device)
 
             optimizer.zero_grad()
             with torch.set_grad_enabled(True):
-                out = model(data)
+                out = model(data1, data2)
                 loss = criterion(out, labels)
 
                 loss.backward()
@@ -243,12 +246,13 @@ def train_bilinear_classifier(train_batch_size=64, test_batch_size=64, learning_
         auc_roc.reset()
 
         model.eval()
-        for data, labels in val_loader:
-            data = data.to(device)
+        for data1, data2, labels in val_loader:
+            data1 = data1.to(device)
+            data2 = data2.to(device)
             labels = labels.to(device)
             optimizer.zero_grad()
             with torch.set_grad_enabled(False):
-                out = model(data)
+                out = model(data1, data2)
                 loss = criterion(out, labels)
 
             detached_preds = softmax(out.detach().clone()).cpu()
