@@ -1,3 +1,4 @@
+import torch
 from torch.utils.data import Dataset
 
 from torchvision.transforms import Compose, ToTensor, Normalize
@@ -34,7 +35,7 @@ class PairSample(Dataset):
 
             self.train_pairs = []
             for i in range(0, len(self.train_data)):
-                sampled_label = np.random.choice(self.labels_set)
+                sampled_label = np.random.choice(list(self.labels_set))
                 sampled_index = np.random.choice(self.label_to_indices[sampled_label])
                 self.train_pairs.append((i, sampled_index))
 
@@ -51,7 +52,7 @@ class PairSample(Dataset):
 
             self.test_pairs = []
             for i in range(0, len(self.test_data)):
-                sampled_label = random_state.choice(self.labels_set)
+                sampled_label = random_state.choice(list(self.labels_set))
                 sampled_index = random_state.choice(self.label_to_indices[sampled_label])
                 self.test_pairs.append((i, sampled_index))
 
@@ -70,4 +71,4 @@ class PairSample(Dataset):
             img2, label2 = self.test_data[self.test_pairs[index][1]], self.test_labels[
                 self.test_pairs[index][1]].item()
 
-        return img1, img2, label1, label2
+        return img1, img2, torch.tensor(label1+label2)
