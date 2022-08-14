@@ -26,7 +26,7 @@ class PairSample(Dataset):
         test_dataset = MNIST(self.root / 'MNIST', train=False, download=download,
                              transform=self.transform)
 
-        self.n_classes = 18
+        self.n_classes = 19
 
         self.train = train
         if self.train:

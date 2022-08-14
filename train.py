@@ -15,9 +15,11 @@ from helsing.utils import get_res_dict, disp_metrics_for_epoch, plot_result_metr
 from helsing.constants import BASE_DIR
 
 
-accuracy = Accuracy(top_k=1, num_classes=3, average='macro')
-auc_roc = AUROC(num_classes=3, average='macro')
-f1_score = F1Score(top_k=1, num_classes=3, average='macro')
+num_classes = 19
+
+accuracy = Accuracy(top_k=1, num_classes=num_classes, average='macro')
+auc_roc = AUROC(num_classes=num_classes, average='macro')
+f1_score = F1Score(top_k=1, num_classes=num_classes, average='macro')
 
 config = {
     'in_channels': 1,
