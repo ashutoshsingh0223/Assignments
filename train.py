@@ -284,7 +284,3 @@ def train_bilinear_classifier(train_batch_size=64, test_batch_size=64, learning_
 
     # Save val metrics charts
     plot_result_metrics(res_dict, path=run_path)
-
-
-if __name__ == '__main__':
-    main(train_batch_size=64, test_batch_size=8, learning_rate=0.0001)
