@@ -1,8 +1,8 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 
 import torch
 
-from constants import BASE_DIR
+from helsing.constants import BASE_DIR
 
 
 class Model(ABC):
