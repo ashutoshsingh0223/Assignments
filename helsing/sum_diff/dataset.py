@@ -14,8 +14,8 @@ class PairSampleWithOp(PairSample):
         # half for negative op.
         # Op encoded as one-hot encoding [1., 0.] for positive and [0., 1.] for negative.
 
-        self.negative = 0
-        self.positive = 1
+        self.plus = 0
+        self.minus = 1
 
         if self.train:
             len_ = len(self.train_pairs)
@@ -53,10 +53,10 @@ class PairSampleWithOp(PairSample):
         img1 = Image.fromarray(img1.numpy(), mode='L')
         img2 = Image.fromarray(img2.numpy(), mode='L')
 
-        if op[self.positive] == 1:
+        if op[self.plus] == 1:
             val = label1 + label2
             label = tensor(val + 9)
-        elif op[self.negative] == 1:
+        elif op[self.minus] == 1:
             val = label1 - label2
             label = tensor(self.value_to_label.index(val))
 
@@ -85,10 +85,10 @@ class PairSampleWithOpAndSign(PairSampleWithOp):
         img2 = Image.fromarray(img2.numpy(), mode='L')
 
         sign = 1
-        if op[self.positive] == 1:
+        if op[self.plus] == 1:
             val = label1 + label2
             label = tensor(val)
-        elif op[self.negative] == 1:
+        elif op[self.minus] == 1:
             val = label1 - label2
             label = tensor(abs(val))
             if val < 0:
