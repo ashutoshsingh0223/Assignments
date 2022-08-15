@@ -214,7 +214,7 @@ def train_classification_sum_diff(model, optimizer, train_loader, val_loader, re
         run_loss_val = 0.0
 
         model.train()
-        for data1, data2, ops, labels, _ in train_loader:
+        for data1, data2, ops, labels in train_loader:
             data1 = data1.to(device)
             data2 = data2.to(device)
             labels = labels.to(device)
@@ -249,7 +249,7 @@ def train_classification_sum_diff(model, optimizer, train_loader, val_loader, re
         auc_roc.reset()
 
         model.eval()
-        for data1, data2, ops, labels, _ in val_loader:
+        for data1, data2, ops, labels in val_loader:
             data1 = data1.to(device)
             data2 = data2.to(device)
             labels = labels.to(device)
@@ -529,8 +529,8 @@ def train_sum_diff_with_sign(model_name, model_type='classifier', train_batch_si
         train_regression_sum(model, optimizer, train_loader, val_loader, res_dict, device, run_id, run_path, epochs)
 
 
-def train_sum_diff_with(model_name, model_type='classifier', train_batch_size=64, test_batch_size=64,
-                        learning_rate=0.0001, epochs=15, download=False):
+def train_sum_diff(model_name, model_type='classifier', train_batch_size=64, test_batch_size=64,
+                   learning_rate=0.0001, epochs=15, download=False):
 
     run_id, run_path = create_run_dir(name=model_name)
     # Dump all hyperparams and configs
