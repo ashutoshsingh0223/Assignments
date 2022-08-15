@@ -6,7 +6,7 @@ import torch.nn as nn
 
 import matplotlib.pyplot as plt
 
-from constants import BASE_DIR
+from helsing.constants import BASE_DIR
 
 
 # Activation funcs
