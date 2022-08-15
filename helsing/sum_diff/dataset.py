@@ -36,7 +36,7 @@ class PairSampleWithOp(PairSample):
         else:
             return len(self.test_pairs)
 
-    def __get_item__(self, index):
+    def __getitem__(self, index):
         if self.train:
             img1, label1 = self.train_data[self.train_pairs[index][0]], self.train_labels[
                 self.train_pairs[index][0]].item()
@@ -67,7 +67,7 @@ class PairSampleWithOpAndSign(PairSampleWithOp):
     def __init__(self, root: 'Path', train: bool = True, download=True, transform=False):
         super(PairSampleWithOpAndSign, self).__init__(root=root, train=train, download=download, transform=transform)
 
-    def __get_item__(self, index):
+    def __getitem__(self, index):
         if self.train:
             img1, label1 = self.train_data[self.train_pairs[index][0]], self.train_labels[
                 self.train_pairs[index][0]].item()
