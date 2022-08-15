@@ -252,6 +252,7 @@ def train_classification_sum_diff(model, optimizer, train_loader, val_loader, re
         for data1, data2, ops, labels in val_loader:
             data1 = data1.to(device)
             data2 = data2.to(device)
+            ops = ops.to(device)
             labels = labels.to(device)
             optimizer.zero_grad()
             with torch.set_grad_enabled(False):
@@ -309,6 +310,8 @@ def train_classification_sum_diff_with_sign(model, optimizer, train_loader, val_
         for data1, data2, ops, labels, sign, _ in train_loader:
             data1 = data1.to(device)
             data2 = data2.to(device)
+            ops = ops.to(device)
+            sign = sign.to(device)
             labels = labels.to(device)
 
             optimizer.zero_grad()
@@ -344,6 +347,8 @@ def train_classification_sum_diff_with_sign(model, optimizer, train_loader, val_
         for data1, data2, ops, labels, sign, _ in val_loader:
             data1 = data1.to(device)
             data2 = data2.to(device)
+            ops = ops.to(device)
+            sign = sign.to(device)
             labels = labels.to(device)
             optimizer.zero_grad()
             with torch.set_grad_enabled(False):
@@ -401,6 +406,7 @@ def train_regression_sum_diff(model, optimizer, train_loader, val_loader, res_di
         for data1, data2, ops, _, _, targets in train_loader:
             data1 = data1.to(device)
             data2 = data2.to(device)
+            ops = ops.to(device)
             targets = targets.to(device)
 
             optimizer.zero_grad()
@@ -422,6 +428,7 @@ def train_regression_sum_diff(model, optimizer, train_loader, val_loader, res_di
         for data1, data2, ops, _, _, targets in val_loader:
             data1 = data1.to(device)
             data2 = data2.to(device)
+            ops = ops.to(device)
             targets = targets.to(device)
             optimizer.zero_grad()
             with torch.set_grad_enabled(False):
