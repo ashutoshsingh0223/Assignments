@@ -201,10 +201,42 @@ def train_regression_sum(model, optimizer, train_loader, val_loader, res_dict, d
     plot_result_metrics(res_dict, path=run_path)
 
 
-def train_classification_sum_diff(model, optimizer, train_loader, val_loader, res_dict, device, run_id, run_path,
-                                  epochs):
+def train_classification_sum_diff(model_name, train_batch_size=64, test_batch_size=64,
+                                  learning_rate=0.0001, epochs=15, download=False):
     global config
     config['fc_classifier'][-1]['out_features'] = 28
+
+    run_id, run_path = create_run_dir(name=model_name)
+    # Dump all hyperparams and configs
+
+    with open(run_path / 'hyperparams.json', 'w') as f:
+        hyperparams = {
+            'config': config, 'train_batch_size': train_batch_size, 'learning_rate': learning_rate, 'epochs': epochs
+        }
+        f.write(json.dumps(hyperparams))
+
+    # Create datasets and dataloaders
+    train_set = PairSampleWithOp(root=BASE_DIR, train=True, download=download)
+    val_set = PairSampleWithOp(root=BASE_DIR, train=False, download=download)
+
+    train_loader = DataLoader(dataset=train_set, shuffle=True, pin_memory=True, num_workers=2,
+                              batch_size=train_batch_size)
+    val_loader = DataLoader(dataset=val_set, shuffle=False, batch_size=test_batch_size)
+
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
+    # Define model, optimizer and criterion
+    model = model_index[model_name](config=config)
+    model = model.to(device)
+    optimizer = Adam(model.parameters(), lr=learning_rate)
+
+    if torch.cuda.device_count() > 1:
+        model = torch.nn.DataParallel(model)
+
+    # Get result dict
+    res_dict = get_res_dict()
+
+
     softmax = torch.nn.Softmax(dim=1)
     criterion = CrossEntropyLoss(reduction='mean')
     best_val_loss = math.inf
@@ -535,40 +567,3 @@ def train_sum_diff_with_sign(model_name, model_type='classifier', train_batch_si
                                  epochs)
     else:
         train_regression_sum(model, optimizer, train_loader, val_loader, res_dict, device, run_id, run_path, epochs)
-
-
-def train_sum_diff(model_name, model_type='classifier', train_batch_size=64, test_batch_size=64,
-                   learning_rate=0.0001, epochs=15, download=False):
-
-    run_id, run_path = create_run_dir(name=model_name)
-    # Dump all hyperparams and configs
-
-    with open(run_path / 'hyperparams.json', 'w') as f:
-        hyperparams = {
-            'config': config, 'train_batch_size': train_batch_size, 'learning_rate': learning_rate, 'epochs': epochs
-        }
-        f.write(json.dumps(hyperparams))
-
-    # Create datasets and dataloaders
-    train_set = PairSampleWithOp(root=BASE_DIR, train=True, download=download)
-    val_set = PairSampleWithOp(root=BASE_DIR, train=False, download=download)
-
-    train_loader = DataLoader(dataset=train_set, shuffle=True, pin_memory=True, num_workers=2,
-                              batch_size=train_batch_size)
-    val_loader = DataLoader(dataset=val_set, shuffle=False, batch_size=test_batch_size)
-
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
-    # Define model, optimizer and criterion
-    model = model_index[model_name](config=config)
-    model = model.to(device)
-    optimizer = Adam(model.parameters(), lr=learning_rate)
-
-    if torch.cuda.device_count() > 1:
-        model = torch.nn.DataParallel(model)
-
-    # Get result dict
-    res_dict = get_res_dict()
-
-    train_classification_sum_diff(model, optimizer, train_loader, val_loader, res_dict, device, run_id, run_path,
-                                  epochs)
