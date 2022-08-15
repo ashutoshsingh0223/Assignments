@@ -84,7 +84,7 @@ class PairSampleWithOpAndSign(PairSampleWithOp):
         img1 = Image.fromarray(img1.numpy(), mode='L')
         img2 = Image.fromarray(img2.numpy(), mode='L')
 
-        sign = 1
+        sign = self.plus
         if op[self.plus] == 1:
             val = label1 + label2
             label = tensor(val)
@@ -92,7 +92,7 @@ class PairSampleWithOpAndSign(PairSampleWithOp):
             val = label1 - label2
             label = tensor(abs(val))
             if val < 0:
-                sign = 0
+                sign = self.minus
 
         sign = tensor(sign)
         regression_target = (val - self.min) / (self.max - self.min)
