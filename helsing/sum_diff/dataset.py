@@ -28,7 +28,7 @@ class PairSampleWithOp(PairSample):
 
         self.min = -9
 
-        self.value_to_label = [-9, -8, -6, -5, -4, -3, -2, -1] + list(range(0, 19))
+        self.value_to_label = [-9, -8, -7, -6, -5, -4, -3, -2, -1] + list(range(0, 19))
 
     def __len__(self):
         if self.train:
