@@ -22,7 +22,7 @@ class Model(ABC):
             path = BASE_DIR / run_id / "classifier.pt"
         state = {
             'state_dict': self.state_dict(),
-            'params': {'config': self.config, 'num_classes': self.num_classes}
+            'params': {'config': self.config}
         }
 
         torch.save(state, path)
