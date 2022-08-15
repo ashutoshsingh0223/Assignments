@@ -1,4 +1,5 @@
-from torch import tensor, FloatTensor
+import numpy as np
+from torch import tensor, from_numpy
 
 from PIL import Image
 
@@ -96,4 +97,5 @@ class PairSampleWithOpAndSign(PairSampleWithOp):
 
         sign = tensor(sign)
         regression_target = (val - self.min) / (self.max - self.min)
-        return self.to_tensor(img1), self.to_tensor(img2), FloatTensor(op), label, sign, regression_target
+        op = np.array(op, dtype=np.float32)
+        return self.to_tensor(img1), self.to_tensor(img2), from_numpy(op), label, sign, regression_target
