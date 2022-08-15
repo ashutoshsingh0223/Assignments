@@ -217,6 +217,7 @@ def train_classification_sum_diff(model, optimizer, train_loader, val_loader, re
         for data1, data2, ops, labels in train_loader:
             data1 = data1.to(device)
             data2 = data2.to(device)
+            ops = ops.to(device)
             labels = labels.to(device)
 
             optimizer.zero_grad()
