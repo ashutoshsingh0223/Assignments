@@ -37,7 +37,7 @@ config = {
     # Concatenation yields 128 and 128 = 256
     # For bilinear layer will just be 128
     'fc_classifier': (
-        {"in_features": 256, "out_features": 256, "activation": None, 'dropout': 0.4},
+        {"in_features": 128, "out_features": 256, "activation": None, 'dropout': 0.4},
         {"in_features": 256, "out_features": 19, "activation": None, 'dropout': None},
     )
 }
