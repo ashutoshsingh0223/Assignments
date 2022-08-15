@@ -63,33 +63,9 @@ class PairSampleWithOp(PairSample):
         return self.to_tensor(img1), self.to_tensor(img2), tensor(op), label
 
 
-class PairSampleWithOpAndSign(PairSample):
+class PairSampleWithOpAndSign(PairSampleWithOp):
     def __init__(self, root: 'Path', train: bool = True, download=True, transform=False):
         super(PairSampleWithOpAndSign, self).__init__(root=root, train=train, download=download, transform=transform)
-
-        # Extend the functionality of generating pairs by doubling the size of dataset half for positive op and other
-        # half for negative op.
-        # Op encoded as one-hot encoding [1., 0.] for positive and [0., 1.] for negative.
-
-        self.negative = 0
-        self.positive = 1
-
-        if self.train:
-            len_ = len(self.train_pairs)
-            self.train_pairs = self.train_pairs + self.train_pairs
-            self.ops = ([[1, 0]] * len_) + ([[0, 1]] * len_)
-        else:
-            len_ = len(self.test_pairs)
-            self.test_pairs = self.test_pairs + self.test_pairs
-            self.ops = ([[1, 0]] * len_) + ([[0, 1]] * len_)
-
-        self.min = -9
-
-    def __len__(self):
-        if self.train:
-            return len(self.train_pairs)
-        else:
-            return len(self.test_pairs)
 
     def __get_item__(self, index):
         if self.train:
