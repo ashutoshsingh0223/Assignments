@@ -63,7 +63,7 @@ class Encoder(nn.Module):
 
 class DirectAdditionModel(nn.Module, Model):
 
-    def __init__(self, config, num_classes=19):
+    def __init__(self, config):
         """
         Image classifier
         Args:
@@ -80,12 +80,10 @@ class DirectAdditionModel(nn.Module, Model):
                             ...)
         }
 
-            num_classes: number of classes for the classifier. Default 3
         """
         super(DirectAdditionModel, self).__init__()
 
         self.config = config
-        self.num_classes = num_classes
         self.encoder = Encoder(config=self.config['encoder'], in_channels=self.config['in_channels'])
 
         # self.bottleneck = nn.Conv2d(in_channels=self.encoder.out_channels, out_channels=1, kernel_size=1)
@@ -115,7 +113,7 @@ class DirectAdditionModel(nn.Module, Model):
 
 class BilinearModel(nn.Module, Model):
 
-    def __init__(self, config, num_classes=19):
+    def __init__(self, config):
         """
         Image classifier
         Args:
@@ -138,7 +136,6 @@ class BilinearModel(nn.Module, Model):
         super(BilinearModel, self).__init__()
 
         self.config = config
-        self.num_classes = num_classes
         self.encoder = Encoder(config=self.config['encoder'], in_channels=self.config['in_channels'])
 
         # self.bottleneck = nn.Conv2d(in_channels=self.encoder.out_channels, out_channels=1, kernel_size=1)
@@ -172,18 +169,17 @@ class BilinearModel(nn.Module, Model):
 
 
 class OpAwareModel(nn.Module, Model):
-    def __init__(self, config, num_classes=19):
+    def __init__(self, config):
         super(OpAwareModel, self).__init__()
 
         self.config = config
-        self.num_classes = num_classes
         self.encoder = Encoder(config=self.config['encoder'], in_channels=self.config['in_channels'])
 
         # self.bottleneck = nn.Conv2d(in_channels=self.encoder.out_channels, out_channels=1, kernel_size=1)
         self.pool = nn.AdaptiveAvgPool2d(1)
         self.flatten = nn.Flatten()
 
-        # Negate the second input
+        # For mapping sign of the second input
         self.bilinear = nn.Bilinear(in1_features=self.config['fc_classifier'][0]['in_features'],
                                     in2_features=2,
                                     out_features=self.config['fc_classifier'][0]['in_features'])
@@ -213,9 +209,54 @@ class OpAwareModel(nn.Module, Model):
         return x
 
 
+class OpAwareBilinear(nn.Module, Model):
+    def __init__(self, config):
+        super(OpAwareBilinear, self).__init__()
+
+        self.config = config
+        self.encoder = Encoder(config=self.config['encoder'], in_channels=self.config['in_channels'])
+
+        # self.bottleneck = nn.Conv2d(in_channels=self.encoder.out_channels, out_channels=1, kernel_size=1)
+        self.pool = nn.AdaptiveAvgPool2d(1)
+        self.flatten = nn.Flatten()
+
+        # For mapping sign of the second input
+        self.sign = nn.Bilinear(in1_features=self.config['fc_classifier'][0]['in_features'],
+                                in2_features=2,
+                                out_features=self.config['fc_classifier'][0]['in_features'])
+
+        self.bilinear = nn.Bilinear(in1_features=self.config['fc_classifier'][0]['in_features'],
+                                    in2_features=self.config['fc_classifier'][0]['in_features'],
+                                    out_features=self.config['fc_classifier'][0]['in_features'])
+
+        self.sigmoid = nn.Sigmoid()
+        self.fc_classifier = FullyConnectedSet(fully_connected_cfg=self.config['fc_classifier'])
+
+    def forward(self, x1, x2, op, regress=False):
+        x1 = self.encoder(x1)
+        x2 = self.encoder(x2)
+
+        x1 = self.pool(x1)
+        x2 = self.pool(x2)
+
+        x1 = self.flatten(x1)
+        x2 = self.flatten(x2)
+
+        # Perform sign insertion
+        x2 = self.sign(x2, op)
+
+        x = self.bilinear(x1, x2)
+        x = self.fc_classifier(x)
+
+        if regress:
+            x = self.sigmoid(x)
+        return x
+
+
 model_index = {
 
     'addition': DirectAdditionModel,
     'bilinear': BilinearModel,
-    'subtraction': OpAwareModel
+    'subtraction': OpAwareModel,
+    'op_aware_bilinear': OpAwareBilinear
 }
