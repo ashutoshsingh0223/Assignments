@@ -61,7 +61,8 @@ class PairSampleWithOp(PairSample):
             val = label1 - label2
             label = tensor(self.value_to_label.index(val))
 
-        return self.to_tensor(img1), self.to_tensor(img2), FloatTensor(op), label
+        op = np.array(op, dtype=np.float32)
+        return self.to_tensor(img1), self.to_tensor(img2), from_numpy(op), label
 
 
 class PairSampleWithOpAndSign(PairSampleWithOp):
