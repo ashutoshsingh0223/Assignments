@@ -1,9 +1,12 @@
 from typing import Tuple, Any, Dict
 from collections import OrderedDict
+from datetime import datetime
 
 import torch.nn as nn
 
 import matplotlib.pyplot as plt
+
+from constants import BASE_DIR
 
 
 # Activation funcs
@@ -63,3 +66,13 @@ def get_res_dict():
         classification_res_dict[f'train_{m}'] = []
 
     return classification_res_dict
+
+
+def create_run_dir(name: str):
+    # Create run_id and a directory
+    now = datetime.now()  # current date and time
+    run_id = f"{name}-{now.strftime('%d-%m-%Y-%H-%M')}"
+    run_path = BASE_DIR / run_id
+    run_path.mkdir(parents=True, exist_ok=True)
+
+    return run_id, run_path

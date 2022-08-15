@@ -1,12 +1,9 @@
-from typing import Union
-import json
-from pathlib import Path
 
 import torch
 import torch.nn as nn
 
 from helsing.blocks import ConvBlock, FullyConnectedSet
-from helsing.constants import BASE_DIR
+from helsing.abstract import Model
 
 
 class Encoder(nn.Module):
@@ -64,7 +61,7 @@ class Encoder(nn.Module):
         return x
 
 
-class Classifier(nn.Module):
+class DirectAdditionModel(nn.Module, Model):
 
     def __init__(self, config, num_classes=19):
         """
@@ -85,7 +82,7 @@ class Classifier(nn.Module):
 
             num_classes: number of classes for the classifier. Default 3
         """
-        super(Classifier, self).__init__()
+        super(DirectAdditionModel, self).__init__()
 
         self.config = config
         self.num_classes = num_classes
@@ -94,9 +91,11 @@ class Classifier(nn.Module):
         # self.bottleneck = nn.Conv2d(in_channels=self.encoder.out_channels, out_channels=1, kernel_size=1)
         self.pool = nn.AdaptiveAvgPool2d(1)
         self.flatten = nn.Flatten()
+
+        self.sigmoid = nn.Sigmoid()
         self.fc_classifier = FullyConnectedSet(fully_connected_cfg=self.config['fc_classifier'])
 
-    def forward(self, x1, x2):
+    def forward(self, x1, x2, regress=False):
         x1 = self.encoder(x1)
         x2 = self.encoder(x2)
 
@@ -106,49 +105,15 @@ class Classifier(nn.Module):
         x1 = self.flatten(x1)
         x2 = self.flatten(x2)
 
-        x = torch.cat((x1, x2), dim=-1)
+        x = x1 + x2
         x = self.fc_classifier(x)
+
+        if regress:
+            x = self.sigmoid(x)
         return x
 
-    def save(self, run_id, best=False):
-        """
 
-        Args:
-            run_id: id of train run for which saving was donw
-            best: if this save is best model of the run
-
-        Returns:
-            None
-        """
-        if best:
-            path = BASE_DIR / run_id / "best-classifier.pt"
-        else:
-            path = BASE_DIR / run_id / "classifier.pt"
-        state = {
-            'state_dict': self.state_dict(),
-            'params': {'config': self.config, 'num_classes': self.num_classes}
-        }
-
-        torch.save(state, path)
-        print(f'Model saved at: {path}')
-
-    @classmethod
-    def load(cls, path: Union[Path, str]):
-        """
-
-        Args:
-            path: Path of model file. Check `.pt` files in run-id dir
-
-        Returns:
-
-        """
-        data = torch.load(path, map_location=torch.device('cpu'))
-        model = cls(**data['params'])
-        model.load_state_dict(data['state_dict'])
-        return model
-
-
-class BilinearClassifier(nn.Module):
+class BilinearModel(nn.Module, Model):
 
     def __init__(self, config, num_classes=19):
         """
@@ -170,7 +135,7 @@ class BilinearClassifier(nn.Module):
 
             num_classes: number of classes for the classifier. Default 3
         """
-        super(BilinearClassifier, self).__init__()
+        super(BilinearModel, self).__init__()
 
         self.config = config
         self.num_classes = num_classes
@@ -184,9 +149,11 @@ class BilinearClassifier(nn.Module):
                                     in2_features=self.config['fc_classifier'][0]['in_features'],
                                     out_features=self.config['fc_classifier'][0]['in_features'])
 
+        self.sigmoid = nn.Sigmoid()
+
         self.fc_classifier = FullyConnectedSet(fully_connected_cfg=self.config['fc_classifier'])
 
-    def forward(self, x1, x2):
+    def forward(self, x1, x2, regress=False):
         x1 = self.encoder(x1)
         x2 = self.encoder(x2)
 
@@ -198,41 +165,57 @@ class BilinearClassifier(nn.Module):
 
         x = self.bilinear(x1, x2)
         x = self.fc_classifier(x)
+
+        if regress:
+            x = self.sigmoid(x)
         return x
 
-    def save(self, run_id, best=False):
-        """
 
-        Args:
-            run_id: id of train run for which saving was donw
-            best: if this save is best model of the run
+class OpAwareModel(nn.Module, Model):
+    def __init__(self, config, num_classes=19):
+        super(OpAwareModel, self).__init__()
 
-        Returns:
-            None
-        """
-        if best:
-            path = BASE_DIR / run_id / "best-classifier.pt"
-        else:
-            path = BASE_DIR / run_id / "classifier.pt"
-        state = {
-            'state_dict': self.state_dict(),
-            'params': {'config': self.config, 'num_classes': self.num_classes}
-        }
+        self.config = config
+        self.num_classes = num_classes
+        self.encoder = Encoder(config=self.config['encoder'], in_channels=self.config['in_channels'])
 
-        torch.save(state, path)
-        print(f'Model saved at: {path}')
+        # self.bottleneck = nn.Conv2d(in_channels=self.encoder.out_channels, out_channels=1, kernel_size=1)
+        self.pool = nn.AdaptiveAvgPool2d(1)
+        self.flatten = nn.Flatten()
 
-    @classmethod
-    def load(cls, path: Union[Path, str]):
-        """
+        # Negate the second input
+        self.bilinear = nn.Bilinear(in1_features=self.config['fc_classifier'][0]['in_features'],
+                                    in2_features=2,
+                                    out_features=self.config['fc_classifier'][0]['in_features'])
 
-        Args:
-            path: Path of model file. Check `.pt` files in run-id dir
+        self.sigmoid = nn.Sigmoid()
+        self.fc_classifier = FullyConnectedSet(fully_connected_cfg=self.config['fc_classifier'])
 
-        Returns:
+    def forward(self, x1, x2, op, regress=False):
+        x1 = self.encoder(x1)
+        x2 = self.encoder(x2)
 
-        """
-        data = torch.load(path, map_location=torch.device('cpu'))
-        model = cls(**data['params'])
-        model.load_state_dict(data['state_dict'])
-        return model
+        x1 = self.pool(x1)
+        x2 = self.pool(x2)
+
+        x1 = self.flatten(x1)
+        x2 = self.flatten(x2)
+
+        # Perform sign insertion
+        x2 = self.bilinear(x2, op)
+
+        # Add
+        x = x1 + x2
+        x = self.fc_classifier(x)
+
+        if regress:
+            x = self.sigmoid(x)
+        return x
+
+
+model_index = {
+
+    'addition': DirectAdditionModel,
+    'bilinear': BilinearModel,
+    'subtraction': OpAwareModel
+}

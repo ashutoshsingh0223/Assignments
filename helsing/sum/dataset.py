@@ -60,6 +60,10 @@ class PairSample(Dataset):
                 sampled_index = random_state.choice(self.label_to_indices[sampled_label])
                 self.test_pairs.append((i, sampled_index))
 
+        # For Regression
+        self.min = 0
+        self.max = 18
+
     def __len__(self):
         return len(self.mnist_dataset)
 
@@ -78,4 +82,8 @@ class PairSample(Dataset):
         img1 = Image.fromarray(img1.numpy(), mode='L')
         img2 = Image.fromarray(img2.numpy(), mode='L')
 
-        return self.to_tensor(img1), self.to_tensor(img2), torch.tensor(label1+label2)
+        val = label1 + label2
+        label = torch.tensor(val)
+        regression_target = (val - self.min) / (self.max - self.min)
+
+        return self.to_tensor(img1), self.to_tensor(img2), label, regression_target
