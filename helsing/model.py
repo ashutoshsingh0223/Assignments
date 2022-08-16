@@ -131,7 +131,6 @@ class BilinearModel(nn.Module, Model):
                             ...)
         }
 
-            num_classes: number of classes for the classifier. Default 3
         """
         super(BilinearModel, self).__init__()
 

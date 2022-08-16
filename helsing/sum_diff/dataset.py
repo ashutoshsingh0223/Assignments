@@ -9,6 +9,15 @@ from helsing.sum.dataset import PairSample
 class PairSampleWithOp(PairSample):
 
     def __init__(self, root: 'Path', train: bool = True, download=True, transform=False):
+        """
+        Use PairSample to do everything and then double the number of pairs. Use half wim sum operation and other half
+        with difference operation
+        Args:
+            root:
+            train:
+            download:
+            transform:
+        """
         super(PairSampleWithOp, self).__init__(root=root, train=train, download=download, transform=transform)
 
         # Extend the functionality of generating pairs by doubling the size of dataset half for positive op and other
@@ -29,6 +38,7 @@ class PairSampleWithOp(PairSample):
 
         self.min = -9
 
+        # Index of each value is the label associated with it. For example: -9 is label 0
         self.value_to_label = [-9, -8, -7, -6, -5, -4, -3, -2, -1] + list(range(0, 19))
 
     def __len__(self):
@@ -54,6 +64,9 @@ class PairSampleWithOp(PairSample):
         img1 = Image.fromarray(img1.numpy(), mode='L')
         img2 = Image.fromarray(img2.numpy(), mode='L')
 
+        # Add 9 to result of addition to get a class label. The idea is how will you differentiate between
+        # 3 - 3 = 0 and 0 + 0 = 0. By having different classes for these two zeros I think the problem might become
+        # easy.
         if op[self.plus] == 1:
             val = label1 + label2
             label = tensor(val + 9)
@@ -67,6 +80,15 @@ class PairSampleWithOp(PairSample):
 
 class PairSampleWithOpAndSign(PairSampleWithOp):
     def __init__(self, root: 'Path', train: bool = True, download=True, transform=False):
+        """
+        This class was not used for submitted solution. Idea behind this was to be used to classify absolute value
+        of result(of addition or subtraction) along with class.
+        Args:
+            root:
+            train:
+            download:
+            transform:
+        """
         super(PairSampleWithOpAndSign, self).__init__(root=root, train=train, download=download, transform=transform)
 
     def __getitem__(self, index):

@@ -11,6 +11,15 @@ import numpy as np
 
 class PairSample(Dataset):
     def __init__(self, root: 'Path', train: bool = True, download=True, transform=False):
+        """
+        PairSample class. It uses existing MNIST dataset to get train and test splits and sample pairs randomly
+        for train split randomly for each initialization and fixed test set pairs.
+        Args:
+            root:
+            train:
+            download:
+            transform:
+        """
 
         self.root = root
 
@@ -26,8 +35,6 @@ class PairSample(Dataset):
         test_dataset = MNIST(self.root / 'MNIST', train=False, download=download,
                              transform=self.transform)
 
-        self.n_classes = 19
-
         self.train = train
         if self.train:
             self.mnist_dataset = train_dataset
@@ -38,6 +45,7 @@ class PairSample(Dataset):
                                      for label in self.labels_set}
 
             self.train_pairs = []
+            # Sample one digit for each instance in MNIST train data
             for i in range(0, len(self.train_data)):
                 sampled_label = np.random.choice(list(self.labels_set))
                 sampled_index = np.random.choice(self.label_to_indices[sampled_label])
@@ -55,6 +63,7 @@ class PairSample(Dataset):
             random_state = np.random.RandomState(29)
 
             self.test_pairs = []
+            # Sample one digit for each instance in MNIST test data. Sample with fixed random_state
             for i in range(0, len(self.test_data)):
                 sampled_label = random_state.choice(list(self.labels_set))
                 sampled_index = random_state.choice(self.label_to_indices[sampled_label])
@@ -82,8 +91,11 @@ class PairSample(Dataset):
         img1 = Image.fromarray(img1.numpy(), mode='L')
         img2 = Image.fromarray(img2.numpy(), mode='L')
 
+        # Generate label for addition - number between 0 to 18
         val = label1 + label2
         label = torch.tensor(val)
+
+        # This is regression target. Not used for submitted solution.
         regression_target = (val - self.min) / (self.max - self.min)
 
         return self.to_tensor(img1), self.to_tensor(img2), label, regression_target
