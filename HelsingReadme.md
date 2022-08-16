@@ -31,7 +31,7 @@
 Please check `demo.ipynb`
 
 
-## More stuff
+## Details
 
 ### Configs used
 
@@ -78,3 +78,14 @@ The attributes are self-expalanatory.
 ### model_index
 Something like a  model-zoo to facilitate use of models with similar outputs by training methods.
 Found in `./helsing/model.py`. Keys from this `dict` are used as model names.
+
+```
+model_index = {
+    'addition': DirectAdditionModel,
+    'bilinear': BilinearModel,
+    'addition_subtraction': OpAwareModel,
+    'op_aware_bilinear': OpAwareBilinear
+}
+```
+
+The first two are used for SuMNIST and Last two for DiffSuMNIST

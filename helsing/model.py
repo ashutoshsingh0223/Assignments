@@ -61,6 +61,9 @@ class Encoder(nn.Module):
         return x
 
 
+################################ DiffSuMNIST ##########################################################
+
+
 class DirectAdditionModel(nn.Module, Model):
 
     def __init__(self, config):
@@ -167,6 +170,8 @@ class BilinearModel(nn.Module, Model):
         return x
 
 
+################################ DiffSuMNIST ##########################################################
+
 class OpAwareModel(nn.Module, Model):
     def __init__(self, config):
         super(OpAwareModel, self).__init__()
@@ -253,9 +258,8 @@ class OpAwareBilinear(nn.Module, Model):
 
 
 model_index = {
-
     'addition': DirectAdditionModel,
     'bilinear': BilinearModel,
-    'subtraction': OpAwareModel,
+    'addition_subtraction': OpAwareModel,
     'op_aware_bilinear': OpAwareBilinear
 }
